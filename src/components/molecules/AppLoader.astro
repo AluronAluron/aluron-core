@@ -1,0 +1,166 @@
+---
+
+---
+
+<div id="app-loader" class="app-loader">
+  <div class="loader-content">
+    <div class="geometric-spinner">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { GeneralConstants } from "../../common/utils/constants/general.constants";
+
+  // Disable scroll and reset position
+  document.body.style.overflow = "hidden";
+  window.scrollTo(0, 0);
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      const loader = document.getElementById("app-loader");
+      if (loader) {
+        loader.classList.add("fade-out");
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          const content = document.getElementById("portfolio-content");
+          if (content) {
+            content.classList.add("fade-in");
+          }
+          document.body.style.overflow = "";
+          window.dispatchEvent(new Event(GeneralConstants.LOADER_FINISHED));
+        }, 800);
+      }
+    }, 1500);
+  });
+</script>
+
+<style>
+  .app-loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+  }
+
+  .app-loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader-content {
+    text-align: center;
+  }
+
+  .geometric-spinner {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    position: relative;
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+
+  .shape {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    filter: brightness(1.1);
+  }
+
+  .shape-1 {
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #88ccca, #5fa8a6);
+    animation: rotate-shape 2s ease-in-out infinite;
+  }
+
+  .shape-2 {
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, #f7a399, #e57a6d);
+    animation: rotate-shape 2s ease-in-out infinite 0.5s;
+    border-radius: 50%;
+  }
+
+  .shape-3 {
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(135deg, #ffd93d, #ffb800);
+    animation: rotate-shape 2s ease-in-out infinite 1s;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  }
+
+  .shape-4 {
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    animation: rotate-shape 2s ease-in-out infinite 1.5s;
+    border-radius: 8px;
+    transform: rotate(45deg);
+  }
+
+  .loading-text {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    10% {
+      transform: scale(1.1);
+    }
+    20% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.1);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes rotate-shape {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+      filter: brightness(1.1);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    }
+    25% {
+      transform: rotate(90deg) scale(1.2);
+      opacity: 0.8;
+      filter: brightness(1.4);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+    }
+    50% {
+      transform: rotate(180deg) scale(1);
+      opacity: 1;
+      filter: brightness(1.1);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    }
+    75% {
+      transform: rotate(270deg) scale(0.8);
+      opacity: 0.8;
+      filter: brightness(1.4);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+    }
+  }
+</style>

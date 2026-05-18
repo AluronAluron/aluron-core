@@ -1,0 +1,18 @@
+---
+interface Props {
+  id: string;
+  subtitle: string;
+}
+
+const { subtitle, id = "subtitle" } = Astro.props;
+---
+
+<!-- SUBTITLE -->
+<p id={id}>{subtitle}</p>
+
+<style>
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+</style>

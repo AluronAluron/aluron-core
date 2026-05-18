@@ -1,0 +1,150 @@
+---
+import MenuToggle from "../atoms/MenuToggle.astro";
+import NavLogo from "../atoms/NavLogo.astro";
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+import ThemeToggle from "../atoms/ThemeToggle.astro";
+import LocaleToggle from "../molecules/LocaleToggle.astro";
+
+const ui = DEFAULT_LOCALE_PACK.data;
+
+---
+
+<!-- NAVIGATION BAR -->
+<nav class="nav">
+  <!-- NAV CONTAINER -->
+  <div class="nav-container">
+    <!-- NAV LOGO -->
+    <NavLogo />
+
+    <div class="nav-right">
+      <!-- NAV LINKS -->
+      <div id="nav-menu" class="nav-links">
+        <a href="#experience" data-navlink="experience">
+          {ui?.nav.experience ?? ""}
+        </a>
+        <a href="#skills" data-navlink="skills">
+          {ui?.nav.skills ?? ""}
+        </a>
+        <a href="#projects" data-navlink="projects">
+          {ui?.nav.projects ?? ""}
+        </a>
+        <a href="#contact" data-navlink="contact">
+          {ui?.nav.contact ?? ""}
+        </a>
+      </div>
+
+      <LocaleToggle />
+      <ThemeToggle />
+      <MenuToggle />
+    </div>
+  </div>
+</nav>
+
+<script>
+  import { currentLocale } from "../../store/locale-store";
+
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>("[data-navlink]");
+  currentLocale.subscribe((bundle) => {
+    if (bundle && bundle.data) {
+      const { nav } = bundle.data;
+      navLinks.forEach((link) => {
+        const key = link.getAttribute('data-navlink') as keyof typeof nav;
+        if (nav[key]) {
+          link.textContent = nav[key];
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  /* BASE */
+  .nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--text-color-base--dark);
+  }
+
+  /* NAV: DARK MODE */
+  :global(body.dark) .nav {
+    background: rgba(26, 32, 44, 0.8);
+    border-bottom: 1px solid var(text-color-base);
+  }
+
+  /* NAV CONTAINER */
+  .nav-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* NAV LINKS */
+  .nav-links {
+    display: flex;
+    gap: 30px;
+  }
+
+  .nav-links a {
+    color: var(--text-color-base);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  :global(body.dark) .nav-links a {
+    color: var(--text-color-base--dark);
+  }
+
+  .nav-links a:hover {
+    color: #88ccca;
+  }
+
+  :global(body.dark) .nav-links a:hover {
+    color: #88ccca;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .nav-right {
+      gap: 12px;
+    }
+
+    .nav-links {
+      position: fixed;
+      top: 61px;
+      right: -100%;
+      width: 250px;
+      height: calc(100vh - 61px);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      flex-direction: column;
+      padding: 30px;
+      gap: 20px;
+      transition: right 0.3s ease;
+      border-left: 1px solid #e2e8f0;
+    }
+
+    :global(body.dark) .nav-links {
+      background: rgba(26, 32, 44, 0.95);
+      border-left: 1px solid #2d3748;
+    }
+
+    .nav-links.active {
+      right: 0;
+    }
+
+    .nav-links a {
+      font-size: 1.1rem;
+    }
+  }
+</style>

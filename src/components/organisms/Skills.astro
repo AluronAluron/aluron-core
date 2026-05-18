@@ -1,0 +1,622 @@
+---
+import { SOFT_SKILLS, HARD_SKILLS } from "../../common/data/portfolio/skills.data";
+import { HardSkillCategory } from "../../common/enums/HardSkillCategory";
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+
+const ui = DEFAULT_LOCALE_PACK.data;
+const locale = DEFAULT_LOCALE_PACK.locale;
+
+const categories = [
+  HardSkillCategory.ProgrammingLanguage,
+  HardSkillCategory.Frameworks,
+  HardSkillCategory.Libraries,
+  HardSkillCategory.Databases,
+  HardSkillCategory.Tools,
+  HardSkillCategory.ArchitectureAndConcepts,
+  HardSkillCategory.AgileMethodologies,
+  HardSkillCategory.OtherLanguages,
+];
+---
+
+<section id="skills">
+  <h2 data-i18n="skills-title">{ui?.sections.skills.title}</h2>
+
+  <div class="skills-container">
+    <div class="skills-group">
+      <h3 data-i18n="skills-soft">{ui?.sections.skills.soft}</h3>
+      <div class="skills-grid">
+        {SOFT_SKILLS.map((skill) => (
+          <div class="skill-card-wrapper" data-skill-id={skill.id}>
+            <div class="skill-card-front">
+              {skill.faIcon && <i class={`${skill.faIcon} skill-icon`} />}
+              <span class="skill-name" data-skill-name={skill.id}>
+                {skill.name[locale] ?? Object.values(skill.name)[0]}
+              </span>
+            </div>
+            <div class="skill-card-back">
+              <span class="skill-desc" data-skill-desc={skill.id}>
+                {skill.description[locale] ?? Object.values(skill.description)[0]}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {HARD_SKILLS.length > 0 && (
+      <div class="skills-group">
+        <h3 data-i18n="skills-hard">{ui?.sections.skills.hard}</h3>
+
+        <div class="hard-skills-container">
+          <div class="hard-tabs">
+            {categories.map((cat, i) => (
+              <button
+                class={`hard-tab ${i === 0 ? 'active' : ''}`}
+                data-cat-key={cat.key}
+              >
+                <i class={cat.faIcon} />
+                <span data-cat-name={cat.key}>{cat.name[locale] ?? Object.values(cat.name)[0]}</span>
+              </button>
+            ))}
+          </div>
+
+          {categories.map((cat, i) => (
+            <div class={`hard-tab-content ${i === 0 ? 'active' : ''}`} id={`cat-${cat.key}`}>
+              <div class="skills-marquee">
+                <div class="skills-marquee-track">
+                  {HARD_SKILLS.filter(s => s.category.key === cat.key).map((skill) => (
+                    <div class="skill-card skill-card--hard" data-skill-id={skill.id}>
+                      {skill.devIcon && <i class={`${skill.devIcon} skill-icon${skill.devIcon.includes('colored') ? ' skill-icon--colored' : ''}`} />}
+                      <span class="skill-name">{skill.name}</span>
+                    </div>
+                  ))}
+                  {HARD_SKILLS.filter(s => s.category.key === cat.key).map((skill) => (
+                    <div class="skill-card skill-card--hard" aria-hidden="true">
+                      {skill.devIcon && <i class={`${skill.devIcon} skill-icon${skill.devIcon.includes('colored') ? ' skill-icon--colored' : ''}`} />}
+                      <span class="skill-name">{skill.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button class="view-all-btn" data-cat-key={cat.key}>
+                <i class="fa-solid fa-list" />
+                <span data-i18n="skills-viewAll">{ui?.sections.skills.viewAll}</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- Skill list modals -->
+  {categories.map((cat) => (
+    <div class="skill-modal-overlay" id={`modal-${cat.key}`}>
+      <div class="skill-modal">
+        <button class="skill-modal-close">&times;</button>
+        <h4 class="skill-modal-title">
+          <i class={cat.faIcon} />
+          <span data-cat-name={cat.key}>{cat.name[locale] ?? Object.values(cat.name)[0]}</span>
+        </h4>
+        <ul class="skill-modal-list">
+          {HARD_SKILLS.filter(s => s.category.key === cat.key).map((skill) => (
+            <li>
+              {skill.devIcon && <i class={`${skill.devIcon}${skill.devIcon.includes('colored') ? '' : ' skill-modal-icon'}`} />}
+              <span>{skill.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  ))}
+</section>
+
+<script>
+  import { currentLocale } from "../../store/locale-store";
+  import { SOFT_SKILLS } from "../../common/data/portfolio/skills.data";
+  import { HardSkillCategory } from "../../common/enums/HardSkillCategory";
+
+  const allCategories = [
+    HardSkillCategory.ProgrammingLanguage,
+    HardSkillCategory.Frameworks,
+    HardSkillCategory.Libraries,
+    HardSkillCategory.Databases,
+    HardSkillCategory.Tools,
+    HardSkillCategory.ArchitectureAndConcepts,
+    HardSkillCategory.AgileMethodologies,
+    HardSkillCategory.OtherLanguages,
+  ];
+
+  currentLocale.subscribe((bundle) => {
+    if (!bundle || !bundle.data) return;
+    const locale = bundle.locale;
+
+    document.querySelectorAll<HTMLElement>('[data-i18n="skills-title"]')
+      .forEach((el) => (el.textContent = bundle.data!.sections.skills.title));
+    document.querySelectorAll<HTMLElement>('[data-i18n="skills-soft"]')
+      .forEach((el) => (el.textContent = bundle.data!.sections.skills.soft));
+    document.querySelectorAll<HTMLElement>('[data-i18n="skills-hard"]')
+      .forEach((el) => (el.textContent = bundle.data!.sections.skills.hard));
+    document.querySelectorAll<HTMLElement>('[data-i18n="skills-viewAll"]')
+      .forEach((el) => (el.textContent = bundle.data!.sections.skills.viewAll));
+
+    SOFT_SKILLS.forEach((skill) => {
+      document.querySelectorAll<HTMLElement>(`[data-skill-name="${skill.id}"]`)
+        .forEach((el) => (el.textContent = skill.name[locale] ?? ""));
+      document.querySelectorAll<HTMLElement>(`[data-skill-desc="${skill.id}"]`)
+        .forEach((el) => (el.textContent = skill.description[locale] ?? ""));
+    });
+
+    allCategories.forEach((cat) => {
+      document.querySelectorAll<HTMLElement>(`[data-cat-name="${cat.key}"]`)
+        .forEach((el) => (el.textContent = cat.name[locale] ?? ""));
+    });
+  });
+
+  // Click → flip card
+  document.querySelectorAll<HTMLElement>(".skill-card-wrapper").forEach((card) => {
+    card.addEventListener("click", () => {
+      card.classList.toggle("flipped");
+    });
+  });
+
+  // Hard skill category tabs
+  document.querySelectorAll<HTMLElement>(".hard-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".hard-tab").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".hard-tab-content").forEach((c) => c.classList.remove("active"));
+      tab.classList.add("active");
+      const key = tab.dataset.catKey;
+      document.getElementById(`cat-${key}`)?.classList.add("active");
+    });
+  });
+
+  // View all button → open modal with skill list
+  document.querySelectorAll<HTMLElement>(".view-all-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const catKey = btn.dataset.catKey;
+      const modal = document.getElementById(`modal-${catKey}`);
+      modal?.classList.add("active");
+    });
+  });
+
+  // Close modal
+  document.querySelectorAll<HTMLElement>(".skill-modal-overlay").forEach((overlay) => {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.classList.remove("active");
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>(".skill-modal-close").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.closest(".skill-modal-overlay")?.classList.remove("active");
+    });
+  });</script>
+
+<style>
+  .skills-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .skills-group h3 {
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    color: #718096;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+  }
+
+  .hard-skills-container {
+    height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 24px;
+    border-radius: 14px;
+    background: rgba(247, 163, 153, 0.03);
+    border: 1px solid rgba(247, 163, 153, 0.12);
+  }
+
+  .hard-skills-container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .hard-skills-container::-webkit-scrollbar-thumb {
+    background: rgba(247, 163, 153, 0.4);
+    border-radius: 4px;
+  }
+
+  :global(body.dark) .hard-skills-container {
+    background: rgba(247, 163, 153, 0.02);
+    border-color: rgba(247, 163, 153, 0.08);
+  }
+
+  .hard-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hard-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(247, 163, 153, 0.2);
+    background: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #718096;
+    transition: all 0.2s ease;
+  }
+
+  .hard-tab:hover {
+    color: #f7a399;
+    border-color: #f7a399;
+  }
+
+  .hard-tab.active {
+    background: rgba(247, 163, 153, 0.12);
+    color: #f7a399;
+    border-color: #f7a399;
+    font-weight: 600;
+  }
+
+  :global(body.dark) .hard-tab {
+    border-color: rgba(247, 163, 153, 0.15);
+    color: #a0aec0;
+  }
+
+  :global(body.dark) .hard-tab.active {
+    background: rgba(247, 163, 153, 0.1);
+    color: #f7a399;
+  }
+
+  .hard-tab-content {
+    display: none;
+  }
+
+  .hard-tab-content.active {
+    display: block;
+    animation: fadeTab 0.3s ease;
+  }
+
+  .skills-marquee {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .skills-marquee-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: marquee 15s linear infinite;
+  }
+
+  .skills-marquee:hover .skills-marquee-track {
+    animation-play-state: paused;
+  }
+
+  .view-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 1rem auto 0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(247, 163, 153, 0.3);
+    background: none;
+    color: #f7a399;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .view-all-btn:hover {
+    background: rgba(247, 163, 153, 0.1);
+    border-color: #f7a399;
+  }
+
+  .skill-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .skill-modal-overlay.active {
+    display: flex;
+    animation: fadeTab 0.2s ease;
+  }
+
+  .skill-modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(body.dark) .skill-modal {
+    background: #2d3748;
+  }
+
+  .skill-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #718096;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .skill-modal-close:hover {
+    color: #f7a399;
+  }
+
+  .skill-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f7a399;
+    margin-bottom: 1.2rem;
+  }
+
+  .skill-modal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .skill-modal-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2d3748;
+  }
+
+  :global(body.dark) .skill-modal-list li {
+    color: #e2e8f0;
+  }
+
+  .skill-modal-list li i {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+  }
+
+  .skill-modal-icon {
+    color: #f7a399;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes fadeTab {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .skill-card-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    cursor: pointer;
+    perspective: 800px;
+  }
+
+  .skill-card-front,
+  .skill-card-back {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 14px;
+    padding: 16px 8px;
+    background: rgba(136, 204, 202, 0.08);
+    border: 1px solid rgba(136, 204, 202, 0.2);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .skill-card-front {
+    transform: rotateY(0deg);
+  }
+
+  .skill-card-back {
+    transform: rotateY(180deg);
+    background: rgba(136, 204, 202, 0.14);
+  }
+
+  .skill-card-wrapper.flipped .skill-card-front {
+    transform: rotateY(-180deg);
+  }
+
+  .skill-card-wrapper.flipped .skill-card-back {
+    transform: rotateY(0deg);
+  }
+
+  .skill-card-wrapper:hover .skill-card-front,
+  .skill-card-wrapper:hover .skill-card-back {
+    border-color: #88ccca;
+    box-shadow: 0 0 20px rgba(136, 204, 202, 0.35), 0 0 40px rgba(136, 204, 202, 0.15);
+  }
+
+  .skill-icon {
+    font-size: 2rem;
+    color: #88ccca;
+    transition: transform 0.25s ease;
+  }
+
+  .skill-icon--colored {
+    color: unset;
+  }
+
+  .skill-card--hard {
+    background: rgba(247, 163, 153, 0.08);
+    border: 1px solid rgba(247, 163, 153, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 120px;
+    width: 120px;
+    height: 120px;
+    border-radius: 14px;
+    padding: 16px 8px;
+    cursor: default;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .skill-card--hard:hover {
+    border-color: #f7a399;
+    box-shadow: 0 0 20px rgba(247, 163, 153, 0.35), 0 0 40px rgba(247, 163, 153, 0.15);
+  }
+
+  .skill-card--hard .skill-icon {
+    color: #f7a399;
+  }
+
+  .skill-card--hard .skill-icon--colored {
+    color: unset;
+  }
+
+  :global(body.dark) .skill-card--hard {
+    background: rgba(247, 163, 153, 0.05);
+    border-color: rgba(247, 163, 153, 0.15);
+  }
+
+  :global(body.dark) .skill-card--hard:hover {
+    border-color: #f7a399;
+    box-shadow: 0 0 20px rgba(247, 163, 153, 0.3), 0 0 40px rgba(247, 163, 153, 0.1);
+  }
+
+  .skill-card-wrapper:hover .skill-icon {
+    transform: scale(1.15);
+  }
+
+  .skill-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #2d3748;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .skill-desc {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #4a5568;
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 4px;
+  }
+
+  :global(body.dark) .skill-card-front,
+  :global(body.dark) .skill-card-back {
+    background: rgba(136, 204, 202, 0.05);
+    border-color: rgba(136, 204, 202, 0.15);
+  }
+
+  :global(body.dark) .skill-card-wrapper:hover .skill-card-front,
+  :global(body.dark) .skill-card-wrapper:hover .skill-card-back {
+    border-color: #88ccca;
+    box-shadow: 0 0 20px rgba(136, 204, 202, 0.3), 0 0 40px rgba(136, 204, 202, 0.1);
+  }
+
+  :global(body.dark) .skill-card-back {
+    background: rgba(136, 204, 202, 0.1);
+  }
+
+  :global(body.dark) .skill-name {
+    color: #e2e8f0;
+  }
+
+  :global(body.dark) .skill-desc {
+    color: #cbd5e0;
+  }
+
+  @media (max-width: 768px) {
+    .skills-grid {
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+    }
+
+    .hard-skills-container {
+      height: 466px;
+    }
+
+    .skill-icon {
+      font-size: 1.5rem;
+    }
+
+    .skill-name {
+      font-size: 0.7rem;
+    }
+
+    .skill-desc {
+      font-size: 0.68rem;
+    }
+  }
+
+  @media (min-width: 741px) {
+    .hard-skills-container {
+      height: 378px;
+    }
+  }
+
+  @media (max-width: 740px) {
+    .hard-skills-container {
+      height: 378px;
+    }
+  }
+
+  @media (max-width: 740px) {
+    .hard-skills-container {
+      height: 420px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .hard-skills-container {
+      height: 566px;
+    }
+  }
+</style>

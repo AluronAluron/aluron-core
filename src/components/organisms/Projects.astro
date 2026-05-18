@@ -1,0 +1,64 @@
+---
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+
+const ui = DEFAULT_LOCALE_PACK.data;
+const locale = DEFAULT_LOCALE_PACK.locale;
+
+const comingSoon = locale === "es-ES" ? "En construcción, paciencia" : "Under construction, stay tuned";
+---
+
+<section id="projects">
+  <h2 data-i18n="projects-title">{ui?.sections.projects.title}</h2>
+
+  <div class="projects-placeholder">
+    <i class="fa-solid fa-gear fa-spin placeholder-icon" />
+    <p class="placeholder-text" data-i18n="projects-coming">{comingSoon}</p>
+  </div>
+</section>
+
+<script>
+  import { currentLocale } from "../../store/locale-store";
+
+  currentLocale.subscribe((bundle) => {
+    if (!bundle || !bundle.data) return;
+    document.querySelectorAll<HTMLElement>('[data-i18n="projects-title"]')
+      .forEach((el) => (el.textContent = bundle.data!.sections.projects.title));
+    const text = bundle.locale === "es-ES" ? "En construcción, paciencia" : "Under construction, stay tuned";
+    document.querySelectorAll<HTMLElement>('[data-i18n="projects-coming"]')
+      .forEach((el) => (el.textContent = text));
+  });
+</script>
+
+<style>
+  .projects-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    border-radius: 14px;
+    background: rgba(136, 204, 202, 0.04);
+    border: 1px dashed rgba(136, 204, 202, 0.3);
+  }
+
+  .placeholder-icon {
+    font-size: 3rem;
+    color: #88ccca;
+    margin-bottom: 1.5rem;
+  }
+
+  .placeholder-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #718096;
+  }
+
+  :global(body.dark) .projects-placeholder {
+    background: rgba(136, 204, 202, 0.02);
+    border-color: rgba(136, 204, 202, 0.15);
+  }
+
+  :global(body.dark) .placeholder-text {
+    color: #a0aec0;
+  }
+</style>

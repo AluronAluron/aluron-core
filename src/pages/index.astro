@@ -1,14 +1,23 @@
 ---
-import '../styles/global.css';
+import AppLoader from "../components/molecules/AppLoader.astro";
+import Hero from "../components/organisms/Hero.astro";
+import About from "../components/organisms/About.astro";
+import Experience from "../components/organisms/Experience.astro";
+import Skills from "../components/organisms/Skills.astro";
+import Projects from "../components/organisms/Projects.astro";
+import Contact from "../components/organisms/Contact.astro";
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Aluron Core</title>
-  </head>
-  <body>
-    <p>Hola Mundo</p>
-  </body>
-</html>
+<Layout title="Portfolio">
+  <AppLoader />
+  <div id="portfolio-content" class="portfolio-content">
+    <Hero />
+    <About />
+    <Experience />
+    <Skills />
+    <Projects />
+    <Contact />
+  </div>
+</Layout>

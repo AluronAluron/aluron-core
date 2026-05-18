@@ -1,0 +1,43 @@
+---
+import NavBar from "../components/organisms/NavBar.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!-- CORE LAYOUT -->
+<!doctype html>
+<html lang="en">
+  <meta />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+  <!-- FONT AWESONE CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <!-- DEVICONS CSS -->
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+  />
+  <body>
+    <!-- THEME INIT (prevent flash) -->
+    <script is:inline>
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    </script>
+    <NavBar />
+    <!-- CONTAINER -->
+    <slot />
+  </body>
+</html>

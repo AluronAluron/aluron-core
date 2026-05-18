@@ -1,13 +1,45 @@
 ---
-
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+const { data } = DEFAULT_LOCALE_PACK;
 ---
 
 <!-- MENU BUTTON (FOR RESPONSIVE DESIGN) -->
-<button id="menu-toggle" class="menu-toggle" aria-label="Open menu">
+<button id="menu-toggle" class="menu-toggle" aria-label="Show menu">
   <span></span>
   <span></span>
   <span></span>
 </button>
+
+<script>
+  import { HTMLAttributesConstants } from "../../common/utils/constants/html-attributes.constants";
+  import { currentLocale } from "../../store/locale-store";
+
+  const menuToggle = document.getElementById("menu-toggle") as HTMLButtonElement;
+  const navMenu = document.getElementById("nav-menu") as HTMLElement;
+
+  // Toggle menu
+  menuToggle.addEventListener("click", () => {
+    menuToggle.classList.toggle("active");
+    navMenu.classList.toggle("active");
+  });
+
+  // Close menu on link click
+  navMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menuToggle.classList.remove("active");
+      navMenu.classList.remove("active");
+    });
+  });
+
+  // Locale reactivity
+  currentLocale.subscribe((bundle) => {
+    if (bundle && bundle.data) {
+      const label = bundle.data.actions.menuToggle;
+      menuToggle.setAttribute(HTMLAttributesConstants.ARIA_LABEL, label);
+      menuToggle.setAttribute(HTMLAttributesConstants.TITLE, label);
+    }
+  });
+</script>
 
 <style>
   .menu-toggle {
@@ -29,7 +61,7 @@
   }
 
   .menu-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(8px 8px);
+    transform: rotate(45deg) translate(8px, 8px);
   }
 
   .menu-toggle.active span:nth-child(2) {
@@ -40,6 +72,7 @@
     transform: rotate(-45deg) translate(7px, -7px);
   }
 
+  /* WHEN PAGE WIDTH IS LOWER THAN 768+1px, SHOW THE BUTTON*/
   @media (max-width: 768px) {
     .menu-toggle {
       display: flex;

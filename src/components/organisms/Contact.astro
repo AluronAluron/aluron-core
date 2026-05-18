@@ -1,0 +1,147 @@
+---
+import { SOCIALS } from "../../common/data/portfolio/socials.data";
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+
+const ui = DEFAULT_LOCALE_PACK.data;
+---
+
+<section id="contact">
+  <h2 data-i18n="contact-title">{ui?.sections.contact.title}</h2>
+
+  <div class="contact-wrapper">
+    <p class="contact-question" data-i18n="contact-question">{ui?.sections.contact.question}</p>
+
+    <div class="contact-socials">
+      {SOCIALS.map((social) => (
+        <a
+          href={social.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-link"
+          title={social.name}
+        >
+          <i class={social.faIcon} />
+          <span>{social.name}</span>
+        </a>
+      ))}
+    </div>
+
+    <a href="mailto:alurondev@gmail.com" class="contact-cta" data-i18n="contact-cta">
+      {ui?.sections.contact.cta}
+    </a>
+  </div>
+
+  <footer class="contact-footer">
+    <p>&copy; {new Date().getFullYear()} Aluron Dev</p>
+  </footer>
+</section>
+
+<script>
+  import { currentLocale } from "../../store/locale-store";
+
+  currentLocale.subscribe((bundle) => {
+    if (!bundle || !bundle.data) return;
+    const { contact } = bundle.data.sections;
+    document.querySelectorAll<HTMLElement>('[data-i18n="contact-title"]')
+      .forEach((el) => (el.textContent = contact.title));
+    document.querySelectorAll<HTMLElement>('[data-i18n="contact-question"]')
+      .forEach((el) => (el.textContent = contact.question));
+    document.querySelectorAll<HTMLElement>('[data-i18n="contact-cta"]')
+      .forEach((el) => (el.textContent = contact.cta));
+  });
+</script>
+
+<style>
+  .contact-wrapper {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .contact-question {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  :global(body.dark) .contact-question {
+    color: #e2e8f0;
+  }
+
+  .contact-socials {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: rgba(136, 204, 202, 0.08);
+    border: 1px solid rgba(136, 204, 202, 0.2);
+    color: #2d3748;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+
+  .contact-link i {
+    font-size: 1.2rem;
+    color: #88ccca;
+  }
+
+  .contact-link:hover {
+    background: rgba(136, 204, 202, 0.18);
+    border-color: #88ccca;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(136, 204, 202, 0.2);
+  }
+
+  :global(body.dark) .contact-link {
+    background: rgba(136, 204, 202, 0.05);
+    border-color: rgba(136, 204, 202, 0.15);
+    color: #e2e8f0;
+  }
+
+  :global(body.dark) .contact-link:hover {
+    background: rgba(136, 204, 202, 0.12);
+    border-color: #88ccca;
+  }
+
+  .contact-cta {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #88ccca, #5fa8a6);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(136, 204, 202, 0.3);
+  }
+
+  .contact-cta:hover {
+    background: linear-gradient(135deg, #f7a399, #e57a6d);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(247, 163, 153, 0.4);
+  }
+
+  .contact-footer {
+    text-align: center;
+    padding-top: 3rem;
+    color: #718096;
+    font-size: 0.85rem;
+  }
+
+  :global(body.dark) .contact-footer {
+    color: #a0aec0;
+  }
+</style>

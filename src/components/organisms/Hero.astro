@@ -1,0 +1,187 @@
+---
+import Title from "../atoms/Title.astro";
+import { DEFAULT_LOCALE_PACK } from "../../i18n";
+import Subtitle from "../atoms/Subtitle.astro";
+import Model3D from "../molecules/Model3D";
+
+const ui = DEFAULT_LOCALE_PACK.data;
+---
+
+<section id="hero">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <Title title="Aluron Dev" />
+      <Subtitle id="subtitle" subtitle={ui?.personalInfo.title ?? ""} />
+      <p id="bio" class="hero-bio">{ui?.personalInfo.bio ?? ""}</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="cta cta-primary" data-i18n="hero-cta">{ui?.sections.hero.cta}</a>
+        <a href="/cv/aluron-cv.pdf" download class="cta cta-secondary" data-i18n="hero-cv">{ui?.sections.hero.downloadCv}</a>
+      </div>
+    </div>
+    <!-- Ghost keeps grid space, hero-model lives inside and can escape via fixed -->
+    <div class="hero-model-ghost">
+      <div class="hero-model" id="hero-model">
+        <Model3D client:load />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { currentLocale } from "../../store/locale-store";
+
+  const subtitleEl = document.getElementById("subtitle") as HTMLElement;
+  const bioEl = document.getElementById("bio") as HTMLElement;
+  const ctaEl = document.querySelector('[data-i18n="hero-cta"]') as HTMLElement;
+  const cvEl = document.querySelector('[data-i18n="hero-cv"]') as HTMLElement;
+
+  currentLocale.subscribe((bundle) => {
+    if (!bundle || !bundle.data) return;
+    subtitleEl.textContent = bundle.data.personalInfo.title;
+    bioEl.textContent = `${bundle.data.personalInfo.bio}.`;
+    ctaEl.textContent = bundle.data.sections.hero.cta;
+    cvEl.textContent = bundle.data.sections.hero.downloadCv;
+  });
+
+  // Model3D: fix to top when ghost leaves viewport
+  const ghost = document.querySelector(".hero-model-ghost") as HTMLElement;
+  const heroModel = document.getElementById("hero-model") as HTMLElement;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) {
+        heroModel.classList.add("model-fixed");
+      } else {
+        heroModel.classList.remove("model-fixed");
+      }
+    },
+    { threshold: 0.15 }
+  );
+
+  observer.observe(ghost);
+</script>
+
+<style>
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .hero-bio {
+    max-width: 600px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .cta {
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(136, 204, 202, 0.3);
+  }
+
+  .cta-primary {
+    background: linear-gradient(135deg, #88ccca, #5fa8a6);
+  }
+
+  .cta-primary:hover {
+    background: linear-gradient(135deg, #f7a399, #e57a6d);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(247, 163, 153, 0.4);
+  }
+
+  .cta-secondary {
+    background: linear-gradient(135deg, #f7a399, #e57a6d);
+    box-shadow: 0 4px 16px rgba(247, 163, 153, 0.3);
+  }
+
+  .cta-secondary:hover {
+    background: linear-gradient(135deg, #88ccca, #5fa8a6);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(136, 204, 202, 0.4);
+  }
+
+  /* Ghost: always holds the 400px space in the grid */
+  .hero-model-ghost {
+    width: 400px;
+    height: 400px;
+    position: relative;
+  }
+
+  /* Model: normally fills the ghost */
+  .hero-model {
+    width: 400px;
+    height: 400px;
+    transition: all 0.4s ease;
+  }
+
+  /* Model: when fixed, escapes the ghost and sticks to top */
+  .hero-model.model-fixed {
+    transition: all 0.23s ease-in-out;
+    position: fixed;
+    top: 25vh;
+    left: 0;
+    /* background: red; */
+    z-index: 9998;
+    transform: scale(0.5);
+    overflow: hidden;
+  }
+
+  @media (max-width: 1300px) {
+    .hero-model.model-fixed {
+      left: unset;
+      top: 67dvh;
+      right: -35dvw;
+      transform: scale(0.35);
+    }
+  }
+
+  /* @media (max-width: 1366px) {
+    .hero-model.model-fixed {
+      transform: scale(0.25);
+      top: -160px;
+      left: -35px;
+    }
+  } */
+
+  @media (max-width: 768px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-bio {
+      max-width: 100%;
+    }
+
+    .hero-ctas {
+      justify-content: center;
+    }
+
+    .hero-model-ghost {
+      order: -1;
+      width: 100%;
+      height: 200px;
+    }
+
+    .hero-model {
+      margin: 0 auto !important;
+      position: relative;
+      top: -80px;
+      transform: scale(0.75);
+    }
+  }
+</style>
